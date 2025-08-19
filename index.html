@@ -165,11 +165,13 @@
             font-size: 1.5rem;
             padding: 20px;
             text-align: center;
+            left: 0;
+            top: 0;
         }
         
         .page img {
-            width: 100%;
-            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
             object-fit: contain;
             transition: transform 0.3s ease;
         }
@@ -488,7 +490,7 @@
                 }
             }
             
-            // عرض الصور
+            // عرض الصور - كل صورة في صفحة منفصلة
             function renderImages() {
                 book.innerHTML = '';
                 
@@ -499,10 +501,12 @@
                     book.appendChild(emptyPage);
                     currentPage = 0;
                 } else {
+                    // إنشاء صفحة لكل صورة
                     images.forEach((image, index) => {
                         const page = document.createElement('div');
                         page.className = 'page';
                         page.dataset.id = image.id;
+                        page.style.transform = `translateX(${index * 100}%)`;
                         
                         const img = document.createElement('img');
                         img.src = image.src;
@@ -634,7 +638,7 @@
                 
                 // إعادة تعيين تحويل الصورة
                 const currentPageElement = book.children[currentPage];
-                currentPageElement.style.transform = '';
+                currentPageElement.style.transform = `translateX(${currentPage * 100}%)`;
                 
                 // تحديد اتجاه السحب والقوة
                 const absDiffX = Math.abs(diffX);
@@ -714,5 +718,4 @@
         });
     </script>
 </body>
-
 </html>
