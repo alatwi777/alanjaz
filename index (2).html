@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ملف الإنجاز</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            text-align: center;
+            z-index: 10;
+        }
+        
+        h1 {
+            font-size: 6rem;
+            margin-bottom: 2rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotateX(0deg); }
+            50% { transform: translateY(-20px) rotateX(5deg); }
+        }
+        
+        .three-d-text {
+            display: inline-block;
+            color: #fff;
+            text-shadow: 
+                0 1px 0 #ccc, 
+                0 2px 0 #c9c9c9, 
+                0 3px 0 #bbb, 
+                0 4px 0 #b9b9b9, 
+                0 5px 0 #aaa, 
+                0 6px 1px rgba(0,0,0,.1), 
+                0 0 5px rgba(0,0,0,.1), 
+                0 1px 3px rgba(0,0,0,.3), 
+                0 3px 5px rgba(0,0,0,.2), 
+                0 5px 10px rgba(0,0,0,.25), 
+                0 10px 10px rgba(0,0,0,.2), 
+                0 20px 20px rgba(0,0,0,.15);
+            transform: translateY(-20px) rotateX(30deg);
+            animation: threeD 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes threeD {
+            0% { transform: translateY(-20px) rotateX(30deg); }
+            100% { transform: translateY(-30px) rotateX(40deg); }
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid white;
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+        }
+        
+        .gallery-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 20;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .upload-btn {
+            background: #4CAF50;
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .upload-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+        
+        .book-container {
+            width: 85vw;
+            height: 70vh;
+            position: relative;
+            perspective: 2000px;
+            margin-top: 20px;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .book {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+        
+        .page {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: #f5f5f5;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 1.5rem;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .page img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: transform 0.3s ease;
+        }
+        
+        .page-controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+        
+        .control-btn {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+        
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-3px);
+        }
+        
+        .delete-btn {
+            background: rgba(244, 67, 54, 0.8);
+        }
+        
+        .delete-btn:hover {
+            background: rgba(244, 67, 54, 0.9);
+        }
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 12px 17px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 30;
+        }
+        
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+        
+        .page-counter {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 1rem;
+        }
+        
+        .drag-instruction {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        #imageUpload {
+            display: none;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateX(100%);
+            transition: transform 0.5s ease;
+            z-index: 100;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        /* تأثيرات الحركة */
+        .swipe-left {
+            animation: swipeLeft 0.5s forwards;
+        }
+        
+        .swipe-right {
+            animation: swipeRight 0.5s forwards;
+        }
+        
+        .swipe-up {
+            animation: swipeUp 0.5s forwards;
+        }
+        
+        .swipe-down {
+            animation: swipeDown 0.5s forwards;
+        }
+        
+        @keyframes swipeLeft {
+            0% { transform: translateX(0) rotate(0deg); }
+            100% { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
+        }
+        
+        @keyframes swipeRight {
+            0% { transform: translateX(0) rotate(0deg); }
+            100% { transform: translateX(100%) rotate(10deg); opacity: 0; }
+        }
+        
+        @keyframes swipeUp {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-100%) rotate(-5deg); opacity: 0; }
+        }
+        
+        @keyframes swipeDown {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100%) rotate(5deg); opacity: 0; }
+        }
+        
+        /* تصميم متجاوب */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 4rem;
+            }
+            
+            .book-container {
+                width: 95vw;
+                height: 60vh;
+            }
+            
+            .drag-instruction {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+            }
+            
+            .control-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .btn {
+                padding: 12px 30px;
+                font-size: 1.2rem;
+            }
+            
+            .book-container {
+                height: 50vh;
+            }
+            
+            .page-controls {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- الصفحة الرئيسية -->
+    <div class="container" id="mainPage">
+        <h1><span class="three-d-text">ملف الإنجاز</span></h1>
+        <button class="btn" id="browseBtn">تصفح</button>
+    </div>
+
+    <!-- صفحة المعرض -->
+    <div class="gallery-page" id="galleryPage">
+        <button class="close-btn" id="closeBtn">✕</button>
+        
+        <div class="drag-instruction">
+            <i class="fas fa-hand-point-up"></i>
+            اسحب الصفحة في أي اتجاه للتنقل بين الصور
+        </div>
+        
+        <label for="imageUpload" class="upload-btn">
+            <i class="fas fa-plus"></i>
+            إضافة صور
+        </label>
+        <input type="file" id="imageUpload" accept="image/*" multiple>
+        
+        <div class="book-container" id="bookContainer">
+            <div class="book" id="book">
+                <div class="page">
+                    <p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>
+                </div>
+            </div>
+            <div class="page-counter" id="pageCounter">0 / 0</div>
+        </div>
+        
+        <div class="page-controls">
+            <button class="control-btn delete-btn" id="deleteBtn">
+                <i class="fas fa-trash"></i>
+                حذف الصورة الحالية
+            </button>
+        </div>
+    </div>
+
+    <!-- إشعار -->
+    <div class="notification" id="notification">
+        <span id="notificationText"></span>
+    </div>
+
+    <!-- عنصر الصوت -->
+    <audio id="pageSound" src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" preload="auto"></audio>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const browseBtn = document.getElementById('browseBtn');
+            const galleryPage = document.getElementById('galleryPage');
+            const closeBtn = document.getElementById('closeBtn');
+            const imageUpload = document.getElementById('imageUpload');
+            const book = document.getElementById('book');
+            const deleteBtn = document.getElementById('deleteBtn');
+            const pageSound = document.getElementById('pageSound');
+            const pageCounter = document.getElementById('pageCounter');
+            const bookContainer = document.getElementById('bookContainer');
+            const notification = document.getElementById('notification');
+            const notificationText = document.getElementById('notificationText');
+            
+            let currentPage = 0;
+            let images = [];
+            let startX = 0;
+            let startY = 0;
+            let isDragging = false;
+            
+            // تحميل الصور المحفوظة من localStorage عند بدء التشغيل
+            window.addEventListener('load', function() {
+                const savedImages = localStorage.getItem('portfolioImages');
+                if (savedImages) {
+                    images = JSON.parse(savedImages);
+                    if (images.length > 0) {
+                        renderImages();
+                        showNotification('تم تحميل الصور المحفوظة مسبقاً');
+                    }
+                }
+            });
+            
+            // فتح صفحة المعرض
+            browseBtn.addEventListener('click', function() {
+                galleryPage.style.display = 'flex';
+            });
+            
+            // إغلاق صفحة المعرض
+            closeBtn.addEventListener('click', function() {
+                galleryPage.style.display = 'none';
+            });
+            
+            // رفع الصور
+            imageUpload.addEventListener('change', function(e) {
+                const files = e.target.files;
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+            });
+            
+            // معالجة الملفات المرفوعة
+            function processFiles(files) {
+                let processed = 0;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        images.push({
+                            src: e.target.result,
+                            id: Date.now() + Math.random().toString(16).slice(2)
+                        });
+                        
+                        processed++;
+                        
+                        if (processed === files.length) {
+                            renderImages();
+                            saveImages();
+                            showNotification(`تم إضافة ${files.length} صورة`);
+                        }
+                    };
+                    reader.readAsDataURL(files[i]);
+                }
+            }
+            
+            // عرض الصور
+            function renderImages() {
+                book.innerHTML = '';
+                
+                if (images.length === 0) {
+                    const emptyPage = document.createElement('div');
+                    emptyPage.className = 'page';
+                    emptyPage.innerHTML = '<p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>';
+                    book.appendChild(emptyPage);
+                    currentPage = 0;
+                } else {
+                    images.forEach((image, index) => {
+                        const page = document.createElement('div');
+                        page.className = 'page';
+                        page.dataset.id = image.id;
+                        
+                        const img = document.createElement('img');
+                        img.src = image.src;
+                        img.draggable = false;
+                        page.appendChild(img);
+                        
+                        book.appendChild(page);
+                    });
+                    
+                    // الانتقال إلى الصورة الجديدة المضافة
+                    if (currentPage === 0 && images.length > 0) {
+                        currentPage = images.length - 1;
+                    }
+                    
+                    goToPage(currentPage);
+                }
+                
+                updatePageCounter();
+                updateDeleteButton();
+            }
+            
+            // الانتقال إلى صفحة محددة
+            function goToPage(pageIndex) {
+                if (images.length === 0) return;
+                
+                const offset = -pageIndex * 100;
+                book.style.transform = `translateX(${offset}%)`;
+                currentPage = pageIndex;
+                updatePageCounter();
+                playPageSound();
+            }
+            
+            // تحديث عداد الصفحات
+            function updatePageCounter() {
+                pageCounter.textContent = `${currentPage + 1} / ${images.length || 1}`;
+            }
+            
+            // تحديث حالة زر الحذف
+            function updateDeleteButton() {
+                deleteBtn.style.display = images.length > 0 ? 'flex' : 'none';
+            }
+            
+            // تشغيل صوت تقليب الصفحة
+            function playPageSound() {
+                pageSound.currentTime = 0;
+                pageSound.play().catch(e => console.log("لم يتم تشغيل الصوت بسبب: ", e));
+            }
+            
+            // حفظ الصور في localStorage
+            function saveImages() {
+                localStorage.setItem('portfolioImages', JSON.stringify(images));
+            }
+            
+            // عرض الإشعار
+            function showNotification(message) {
+                notificationText.textContent = message;
+                notification.classList.add('show');
+                
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+            
+            // حذف الصورة الحالية
+            deleteBtn.addEventListener('click', function() {
+                if (images.length === 0) return;
+                
+                // تطبيق تأثير الحذف
+                const currentPageElement = book.children[currentPage];
+                currentPageElement.classList.add('swipe-down');
+                
+                setTimeout(() => {
+                    // حذف الصورة من المصفوفة
+                    const deletedImageId = currentPageElement.dataset.id;
+                    images = images.filter(img => img.id !== deletedImageId);
+                    
+                    // حفظ التغييرات وعرض الصور المتبقية
+                    saveImages();
+                    renderImages();
+                    
+                    showNotification('تم حذف الصورة');
+                }, 500);
+            });
+            
+            // إضافة دعم السحب باللمس والفأرة
+            bookContainer.addEventListener('mousedown', handleStart);
+            bookContainer.addEventListener('touchstart', handleStart, { passive: true });
+            
+            bookContainer.addEventListener('mousemove', handleMove);
+            bookContainer.addEventListener('touchmove', handleMove, { passive: true });
+            
+            bookContainer.addEventListener('mouseup', handleEnd);
+            bookContainer.addEventListener('touchend', handleEnd);
+            bookContainer.addEventListener('mouseleave', handleEnd);
+            
+            function handleStart(e) {
+                if (images.length <= 1) return;
+                
+                isDragging = true;
+                startX = e.clientX || e.touches[0].clientX;
+                startY = e.clientY || e.touches[0].clientY;
+            }
+            
+            function handleMove(e) {
+                if (!isDragging) return;
+                
+                const currentX = e.clientX || e.touches[0].clientX;
+                const currentY = e.clientY || e.touches[0].clientY;
+                
+                const diffX = currentX - startX;
+                const diffY = currentY - startY;
+                
+                // تطبيق تأثير السحب على الصورة
+                if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+                    const currentPageElement = book.children[currentPage];
+                    currentPageElement.style.transform = `translate(${diffX}px, ${diffY}px) rotate(${diffX * 0.1}deg)`;
+                }
+            }
+            
+            function handleEnd(e) {
+                if (!isDragging) return;
+                
+                isDragging = false;
+                const endX = e.clientX || (e.changedTouches ? e.changedTouches[0].clientX : 0);
+                const endY = e.clientY || (e.changedTouches ? e.changedTouches[0].clientY : 0);
+                
+                const diffX = endX - startX;
+                const diffY = endY - startY;
+                
+                // إعادة تعيين تحويل الصورة
+                const currentPageElement = book.children[currentPage];
+                currentPageElement.style.transform = '';
+                
+                // تحديد اتجاه السحب والقوة
+                const absDiffX = Math.abs(diffX);
+                const absDiffY = Math.abs(diffY);
+                
+                if (absDiffX < 20 && absDiffY < 20) return; // تجاهل السحب الصغير
+                
+                // تطبيق تأثيرات السحب
+                if (absDiffX > absDiffY) {
+                    // سحب أفقي
+                    if (diffX > 50) {
+                        // سحب لليمين - الصورة السابقة
+                        currentPageElement.classList.add('swipe-right');
+                        setTimeout(() => {
+                            currentPageElement.classList.remove('swipe-right');
+                            if (currentPage > 0) {
+                                goToPage(currentPage - 1);
+                            }
+                        }, 500);
+                    } else if (diffX < -50) {
+                        // سحب لليسار - الصورة التالية
+                        currentPageElement.classList.add('swipe-left');
+                        setTimeout(() => {
+                            currentPageElement.classList.remove('swipe-left');
+                            if (currentPage < images.length - 1) {
+                                goToPage(currentPage + 1);
+                            }
+                        }, 500);
+                    }
+                } else {
+                    // سحب عمودي
+                    if (diffY > 50) {
+                        // سحب لأسفل - حذف الصورة
+                        currentPageElement.classList.add('swipe-down');
+                        setTimeout(() => {
+                            currentPageElement.classList.remove('swipe-down');
+                            if (images.length > 0) {
+                                const deletedImageId = currentPageElement.dataset.id;
+                                images = images.filter(img => img.id !== deletedImageId);
+                                saveImages();
+                                renderImages();
+                                showNotification('تم حذف الصورة');
+                            }
+                        }, 500);
+                    } else if (diffY < -50 && images.length > 0) {
+                        // سحب لأعلى - تأثير خاص
+                        currentPageElement.classList.add('swipe-up');
+                        setTimeout(() => {
+                            currentPageElement.classList.remove('swipe-up');
+                        }, 500);
+                    }
+                }
+            }
+            
+            // دعم إسقاط الملفات
+            bookContainer.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                bookContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+            });
+            
+            bookContainer.addEventListener('dragleave', function() {
+                bookContainer.style.backgroundColor = '';
+            });
+            
+            bookContainer.addEventListener('drop', function(e) {
+                e.preventDefault();
+                bookContainer.style.backgroundColor = '';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    processFiles(files);
+                }
+            });
+            
+            // تهيئة أولية
+            renderImages();
+        });
+    </script>
+</body>
+</html>
