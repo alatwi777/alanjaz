@@ -17,14 +17,14 @@
             background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
             background-size: 400% 400%;
             animation: gradientBG 15s ease infinite;
-            height: 100vh;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             color: white;
-            overflow: hidden;
+            overflow-x: hidden;
             touch-action: manipulation;
+            padding: 20px;
         }
         
         @keyframes gradientBG {
@@ -33,18 +33,19 @@
             100% { background-position: 0% 50%; }
         }
         
-        .container {
+        .header {
             text-align: center;
-            z-index: 10;
+            margin: 2rem 0;
+            width: 100%;
         }
         
         h1 {
-            font-size: 6rem;
-            margin-bottom: 2rem;
+            font-size: 4.5rem;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
             transform-style: preserve-3d;
             perspective: 1000px;
             animation: float 3s ease-in-out infinite;
+            margin-bottom: 2rem;
         }
         
         @keyframes float {
@@ -77,37 +78,53 @@
             100% { transform: translateY(-30px) rotateX(40deg); }
         }
         
-        .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid white;
-            color: white;
-            padding: 15px 40px;
-            font-size: 1.5rem;
+        .tabs-container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 50px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 5px;
             backdrop-filter: blur(10px);
             box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            width: fit-content;
+            margin: 0 auto 30px;
         }
         
-        .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-5px);
-            box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+        .tab {
+            padding: 12px 30px;
+            cursor: pointer;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+            font-size: 1.1rem;
         }
         
-        .gallery-page {
+        .tab.active {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-content {
             display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 20;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .tab-content.active {
+            display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
         
         .upload-btn {
@@ -131,13 +148,14 @@
         }
         
         .slider-container {
-            width: 85vw;
-            height: 70vh;
+            width: 100%;
+            height: 60vh;
             position: relative;
             margin-top: 20px;
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.2);
         }
         
         .slider {
@@ -211,26 +229,6 @@
         .control-btn:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: translateY(-3px);
-        }
-        
-        .close-btn {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255, 255, 255, 0.2);
-            border: none;
-            color: white;
-            padding: 12px 17px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.5rem;
-            transition: all 0.3s ease;
-            z-index: 30;
-        }
-        
-        .close-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: rotate(90deg);
         }
         
         .page-counter {
@@ -309,15 +307,47 @@
             background: #f44336;
         }
         
+        .instructions {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            backdrop-filter: blur(5px);
+            max-width: 600px;
+            text-align: center;
+        }
+        
+        .instructions h3 {
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        
+        .instructions ul {
+            text-align: right;
+            list-style-type: none;
+        }
+        
+        .instructions li {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+        
+        .instructions i {
+            color: #4CAF50;
+            font-size: 1.2rem;
+        }
+        
         /* تصميم متجاوب */
         @media (max-width: 768px) {
             h1 {
-                font-size: 4rem;
+                font-size: 3.5rem;
             }
             
             .slider-container {
-                width: 95vw;
-                height: 60vh;
+                height: 50vh;
             }
             
             .drag-instruction {
@@ -329,20 +359,20 @@
                 padding: 10px 20px;
                 font-size: 0.9rem;
             }
+            
+            .tab {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
         }
         
         @media (max-width: 480px) {
             h1 {
-                font-size: 3rem;
-            }
-            
-            .btn {
-                padding: 12px 30px;
-                font-size: 1.2rem;
+                font-size: 2.5rem;
             }
             
             .slider-container {
-                height: 50vh;
+                height: 40vh;
             }
             
             .page-controls {
@@ -357,47 +387,83 @@
                 height: 35px;
                 font-size: 16px;
             }
+            
+            .tabs {
+                flex-direction: column;
+                width: 100%;
+                border-radius: 10px;
+            }
+            
+            .tab {
+                width: 100%;
+                text-align: center;
+                border-radius: 10px;
+                margin: 5px 0;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- الصفحة الرئيسية -->
-    <div class="container" id="mainPage">
+    <!-- الرأس -->
+    <div class="header">
         <h1><span class="three-d-text">ملف الإنجاز</span></h1>
-        <button class="btn" id="browseBtn">تصفح</button>
     </div>
 
-    <!-- صفحة المعرض -->
-    <div class="gallery-page" id="galleryPage">
-        <button class="close-btn" id="closeBtn">✕</button>
-        
-        <div class="drag-instruction">
-            <i class="fas fa-hand-point-up"></i>
-            اسحب لليمين أو لليسار للتنقل بين الصور
+    <!-- التبويبات -->
+    <div class="tabs-container">
+        <div class="tabs">
+            <div class="tab active" data-tab="home">الرئيسية</div>
+            <div class="tab" data-tab="browse">تصفح</div>
         </div>
         
-        <label for="imageUpload" class="upload-btn">
-            <i class="fas fa-plus"></i>
-            إضافة صور
-        </label>
-        <input type="file" id="imageUpload" accept="image/*" multiple>
+        <!-- محتوى تبويب الرئيسية -->
+        <div class="tab-content active" id="homeContent">
+            <div class="instructions">
+                <h3>مرحباً بك في ملف الإنجاز</h3>
+                <p>هنا يمكنك إنشاء معرض لصور إنجازاتك ومشاريعك</p>
+                <ul>
+                    <li><i class="fas fa-arrow-left"></i> انتقل إلى تبويب "تصفح" لبدء رفع الصور</li>
+                    <li><i class="fas fa-plus"></i> يمكنك رفع عدة صور مرة واحدة</li>
+                    <li><i class="fas fa-trash"></i> يمكنك حذف أي صورة بالنقر على زر الحذف</li>
+                    <li><i class="fas fa-arrows-alt-h"></i> اسحب لليمين أو اليسار للتنقل بين الصور</li>
+                    <li><i class="fas fa-save"></i> يتم حفظ صورك تلقائياً</li>
+                </ul>
+            </div>
+        </div>
         
-        <div class="slider-container" id="sliderContainer">
-            <div class="slider" id="slider">
-                <div class="slide">
-                    <div class="empty-slide">
-                        <p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>
+        <!-- محتوى تبويب التصفح -->
+        <div class="tab-content" id="browseContent">
+            <label for="imageUpload" class="upload-btn">
+                <i class="fas fa-plus"></i>
+                رفع صور
+            </label>
+            <input type="file" id="imageUpload" accept="image/*" multiple>
+            
+            <div class="slider-container" id="sliderContainer">
+                <div class="drag-instruction">
+                    <i class="fas fa-hand-point-up"></i>
+                    اسحب لليمين أو لليسار للتنقل بين الصور
+                </div>
+                <div class="slider" id="slider">
+                    <div class="slide">
+                        <div class="empty-slide">
+                            <p>لا توجد صور بعد. قم برفع بعض الصور لتبدأ.</p>
+                        </div>
                     </div>
                 </div>
+                <div class="page-counter" id="pageCounter">0 / 0</div>
             </div>
-            <div class="page-counter" id="pageCounter">0 / 0</div>
-        </div>
-        
-        <div class="page-controls">
-            <button class="control-btn" id="rearrangeBtn">
-                <i class="fas fa-arrows-alt-v"></i>
-                ترتيب الصور
-            </button>
+            
+            <div class="page-controls">
+                <button class="control-btn" id="rearrangeBtn">
+                    <i class="fas fa-arrows-alt-v"></i>
+                    ترتيب الصور
+                </button>
+                <button class="control-btn" id="deleteAllBtn">
+                    <i class="fas fa-trash"></i>
+                    حذف الكل
+                </button>
+            </div>
         </div>
     </div>
 
@@ -407,16 +473,17 @@
     </div>
 
     <!-- عنصر الصوت -->
-    <audio id="pageSound" src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" preload="auto"></audio>
+    <audio id="pageSound" src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVeLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV" preload="auto"></audio>
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const browseBtn = document.getElementById('browseBtn');
-            const galleryPage = document.getElementById('galleryPage');
-            const closeBtn = document.getElementById('closeBtn');
+            // عناصر DOM
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
             const imageUpload = document.getElementById('imageUpload');
             const slider = document.getElementById('slider');
             const rearrangeBtn = document.getElementById('rearrangeBtn');
+            const deleteAllBtn = document.getElementById('deleteAllBtn');
             const pageSound = document.getElementById('pageSound');
             const pageCounter = document.getElementById('pageCounter');
             const sliderContainer = document.getElementById('sliderContainer');
@@ -430,6 +497,21 @@
             let isDragging = false;
             let isRearranging = false;
             
+            // تبديل التبويبات
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // إلغاء تنشيط جميع التبويبات والمحتويات
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    // تنشيط التبويب والمحتوى المحدد
+                    tab.classList.add('active');
+                    document.getElementById(`${tabId}Content`).classList.add('active');
+                });
+            });
+            
             // تحميل الصور المحفوظة من localStorage عند بدء التشغيل
             window.addEventListener('load', function() {
                 const savedImages = localStorage.getItem('portfolioImages');
@@ -440,19 +522,6 @@
                         showNotification('تم تحميل الصور المحفوظة مسبقاً');
                     }
                 }
-            });
-            
-            // فتح صفحة المعرض
-            browseBtn.addEventListener('click', function() {
-                galleryPage.style.display = 'flex';
-            });
-            
-            // إغلاق صفحة المعرض
-            closeBtn.addEventListener('click', function() {
-                galleryPage.style.display = 'none';
-                isRearranging = false;
-                rearrangeBtn.innerHTML = '<i class="fas fa-arrows-alt-v"></i> ترتيب الصور';
-                rearrangeBtn.style.background = 'rgba(255, 255, 255, 0.15)';
             });
             
             // رفع الصور
@@ -494,7 +563,7 @@
                 if (images.length === 0) {
                     const emptySlide = document.createElement('div');
                     emptySlide.className = 'slide';
-                    emptySlide.innerHTML = '<div class="empty-slide"><p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p></div>';
+                    emptySlide.innerHTML = '<div class="empty-slide"><p>لا توجد صور بعد. قم برفع بعض الصور لتبدأ.</p></div>';
                     slider.appendChild(emptySlide);
                     currentSlide = 0;
                 } else {
@@ -588,6 +657,21 @@
                     showNotification('تم حذف الصورة');
                 }, 300);
             }
+            
+            // حذف جميع الصور
+            deleteAllBtn.addEventListener('click', function() {
+                if (images.length === 0) {
+                    showNotification('لا توجد صور لحذفها', true);
+                    return;
+                }
+                
+                if (confirm('هل أنت متأكد من أنك تريد حذف جميع الصور؟')) {
+                    images = [];
+                    saveImages();
+                    renderSlides();
+                    showNotification('تم حذف جميع الصور');
+                }
+            });
             
             // تبديل وضع إعادة الترتيب
             rearrangeBtn.addEventListener('click', function() {
