@@ -130,50 +130,62 @@
             transform: scale(1.05);
         }
         
-        .book-container {
+        .slider-container {
             width: 85vw;
             height: 70vh;
             position: relative;
-            perspective: 2000px;
             margin-top: 20px;
             overflow: hidden;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
         
-        .book {
+        .slider {
             width: 100%;
             height: 100%;
-            position: absolute;
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            display: flex;
+            transition: transform 0.5s ease;
         }
         
-        .page {
-            position: absolute;
-            width: 100%;
+        .slide {
+            min-width: 100%;
             height: 100%;
-            backface-visibility: hidden;
-            background: #f5f5f5;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #333;
-            font-size: 1.5rem;
-            padding: 20px;
-            text-align: center;
-            left: 0;
-            top: 0;
+            background: #f5f5f5;
         }
         
-        .page img {
+        .slide img {
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            transition: transform 0.3s ease;
+        }
+        
+        .slide-delete-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(244, 67, 54, 0.9);
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 18px;
+            z-index: 25;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .slide-delete-btn:hover {
+            background: rgba(244, 67, 54, 1);
+            transform: scale(1.1);
         }
         
         .page-controls {
@@ -199,14 +211,6 @@
         .control-btn:hover {
             background: rgba(255, 255, 255, 0.25);
             transform: translateY(-3px);
-        }
-        
-        .delete-btn {
-            background: rgba(244, 67, 54, 0.8);
-        }
-        
-        .delete-btn:hover {
-            background: rgba(244, 67, 54, 0.9);
         }
         
         .close-btn {
@@ -239,6 +243,7 @@
             padding: 8px 15px;
             border-radius: 20px;
             font-size: 1rem;
+            z-index: 25;
         }
         
         .drag-instruction {
@@ -255,6 +260,17 @@
             align-items: center;
             gap: 10px;
             animation: pulse 2s infinite;
+            z-index: 25;
+        }
+        
+        .empty-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #333;
+            font-size: 1.5rem;
+            text-align: center;
+            padding: 20px;
         }
         
         @keyframes pulse {
@@ -289,41 +305,8 @@
             transform: translateX(0);
         }
         
-        /* تأثيرات الحركة */
-        .swipe-left {
-            animation: swipeLeft 0.5s forwards;
-        }
-        
-        .swipe-right {
-            animation: swipeRight 0.5s forwards;
-        }
-        
-        .swipe-up {
-            animation: swipeUp 0.5s forwards;
-        }
-        
-        .swipe-down {
-            animation: swipeDown 0.5s forwards;
-        }
-        
-        @keyframes swipeLeft {
-            0% { transform: translateX(0) rotate(0deg); }
-            100% { transform: translateX(-100%) rotate(-10deg); opacity: 0; }
-        }
-        
-        @keyframes swipeRight {
-            0% { transform: translateX(0) rotate(0deg); }
-            100% { transform: translateX(100%) rotate(10deg); opacity: 0; }
-        }
-        
-        @keyframes swipeUp {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(-100%) rotate(-5deg); opacity: 0; }
-        }
-        
-        @keyframes swipeDown {
-            0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(100%) rotate(5deg); opacity: 0; }
+        .notification.error {
+            background: #f44336;
         }
         
         /* تصميم متجاوب */
@@ -332,7 +315,7 @@
                 font-size: 4rem;
             }
             
-            .book-container {
+            .slider-container {
                 width: 95vw;
                 height: 60vh;
             }
@@ -358,13 +341,21 @@
                 font-size: 1.2rem;
             }
             
-            .book-container {
+            .slider-container {
                 height: 50vh;
             }
             
             .page-controls {
                 flex-wrap: wrap;
                 justify-content: center;
+            }
+            
+            .slide-delete-btn {
+                top: 10px;
+                right: 10px;
+                width: 35px;
+                height: 35px;
+                font-size: 16px;
             }
         }
     </style>
@@ -382,7 +373,7 @@
         
         <div class="drag-instruction">
             <i class="fas fa-hand-point-up"></i>
-            اسحب الصفحة في أي اتجاه للتنقل بين الصور
+            اسحب لليمين أو لليسار للتنقل بين الصور
         </div>
         
         <label for="imageUpload" class="upload-btn">
@@ -391,19 +382,21 @@
         </label>
         <input type="file" id="imageUpload" accept="image/*" multiple>
         
-        <div class="book-container" id="bookContainer">
-            <div class="book" id="book">
-                <div class="page">
-                    <p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>
+        <div class="slider-container" id="sliderContainer">
+            <div class="slider" id="slider">
+                <div class="slide">
+                    <div class="empty-slide">
+                        <p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>
+                    </div>
                 </div>
             </div>
             <div class="page-counter" id="pageCounter">0 / 0</div>
         </div>
         
         <div class="page-controls">
-            <button class="control-btn delete-btn" id="deleteBtn">
-                <i class="fas fa-trash"></i>
-                حذف الصورة الحالية
+            <button class="control-btn" id="rearrangeBtn">
+                <i class="fas fa-arrows-alt-v"></i>
+                ترتيب الصور
             </button>
         </div>
     </div>
@@ -422,19 +415,20 @@
             const galleryPage = document.getElementById('galleryPage');
             const closeBtn = document.getElementById('closeBtn');
             const imageUpload = document.getElementById('imageUpload');
-            const book = document.getElementById('book');
-            const deleteBtn = document.getElementById('deleteBtn');
+            const slider = document.getElementById('slider');
+            const rearrangeBtn = document.getElementById('rearrangeBtn');
             const pageSound = document.getElementById('pageSound');
             const pageCounter = document.getElementById('pageCounter');
-            const bookContainer = document.getElementById('bookContainer');
+            const sliderContainer = document.getElementById('sliderContainer');
             const notification = document.getElementById('notification');
             const notificationText = document.getElementById('notificationText');
             
-            let currentPage = 0;
+            let currentSlide = 0;
             let images = [];
             let startX = 0;
             let startY = 0;
             let isDragging = false;
+            let isRearranging = false;
             
             // تحميل الصور المحفوظة من localStorage عند بدء التشغيل
             window.addEventListener('load', function() {
@@ -442,7 +436,7 @@
                 if (savedImages) {
                     images = JSON.parse(savedImages);
                     if (images.length > 0) {
-                        renderImages();
+                        renderSlides();
                         showNotification('تم تحميل الصور المحفوظة مسبقاً');
                     }
                 }
@@ -456,6 +450,9 @@
             // إغلاق صفحة المعرض
             closeBtn.addEventListener('click', function() {
                 galleryPage.style.display = 'none';
+                isRearranging = false;
+                rearrangeBtn.innerHTML = '<i class="fas fa-arrows-alt-v"></i> ترتيب الصور';
+                rearrangeBtn.style.background = 'rgba(255, 255, 255, 0.15)';
             });
             
             // رفع الصور
@@ -481,7 +478,7 @@
                         processed++;
                         
                         if (processed === files.length) {
-                            renderImages();
+                            renderSlides();
                             saveImages();
                             showNotification(`تم إضافة ${files.length} صورة`);
                         }
@@ -490,63 +487,60 @@
                 }
             }
             
-            // عرض الصور - كل صورة في صفحة منفصلة
-            function renderImages() {
-                book.innerHTML = '';
+            // عرض الشرائح
+            function renderSlides() {
+                slider.innerHTML = '';
                 
                 if (images.length === 0) {
-                    const emptyPage = document.createElement('div');
-                    emptyPage.className = 'page';
-                    emptyPage.innerHTML = '<p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p>';
-                    book.appendChild(emptyPage);
-                    currentPage = 0;
+                    const emptySlide = document.createElement('div');
+                    emptySlide.className = 'slide';
+                    emptySlide.innerHTML = '<div class="empty-slide"><p>لا توجد صور بعد. قم بإضافة بعض الصور لتبدأ.</p></div>';
+                    slider.appendChild(emptySlide);
+                    currentSlide = 0;
                 } else {
-                    // إنشاء صفحة لكل صورة
                     images.forEach((image, index) => {
-                        const page = document.createElement('div');
-                        page.className = 'page';
-                        page.dataset.id = image.id;
-                        page.style.transform = `translateX(${index * 100}%)`;
+                        const slide = document.createElement('div');
+                        slide.className = 'slide';
+                        slide.dataset.id = image.id;
                         
                         const img = document.createElement('img');
                         img.src = image.src;
                         img.draggable = false;
-                        page.appendChild(img);
+                        slide.appendChild(img);
                         
-                        book.appendChild(page);
+                        // زر الحذف على كل صورة
+                        const deleteBtn = document.createElement('button');
+                        deleteBtn.className = 'slide-delete-btn';
+                        deleteBtn.innerHTML = '<i class="fas fa-trash"></i>';
+                        deleteBtn.onclick = function(e) {
+                            e.stopPropagation();
+                            deleteImage(image.id);
+                        };
+                        slide.appendChild(deleteBtn);
+                        
+                        slider.appendChild(slide);
                     });
                     
-                    // الانتقال إلى الصورة الجديدة المضافة
-                    if (currentPage === 0 && images.length > 0) {
-                        currentPage = images.length - 1;
-                    }
-                    
-                    goToPage(currentPage);
+                    goToSlide(currentSlide);
                 }
                 
                 updatePageCounter();
-                updateDeleteButton();
             }
             
-            // الانتقال إلى صفحة محددة
-            function goToPage(pageIndex) {
+            // الانتقال إلى شريحة محددة
+            function goToSlide(slideIndex) {
                 if (images.length === 0) return;
                 
-                const offset = -pageIndex * 100;
-                book.style.transform = `translateX(${offset}%)`;
-                currentPage = pageIndex;
+                const offset = -slideIndex * 100;
+                slider.style.transform = `translateX(${offset}%)`;
+                currentSlide = slideIndex;
                 updatePageCounter();
                 playPageSound();
             }
             
             // تحديث عداد الصفحات
             function updatePageCounter() {
-                pageCounter.textContent = `${currentPage + 1} / ${images.length || 1}`;
-            }
-            
-            // تحديث حالة زر الحذف
-            function updateDeleteButton() {
-                deleteBtn.style.display = images.length > 0 ? 'flex' : 'none';
+                pageCounter.textContent = `${currentSlide + 1} / ${images.length || 1}`;
             }
             
             // تشغيل صوت تقليب الصفحة
@@ -561,8 +555,9 @@
             }
             
             // عرض الإشعار
-            function showNotification(message) {
+            function showNotification(message, isError = false) {
                 notificationText.textContent = message;
+                notification.className = isError ? 'notification error' : 'notification';
                 notification.classList.add('show');
                 
                 setTimeout(() => {
@@ -570,37 +565,55 @@
                 }, 3000);
             }
             
-            // حذف الصورة الحالية
-            deleteBtn.addEventListener('click', function() {
+            // حذف صورة
+            function deleteImage(imageId) {
                 if (images.length === 0) return;
                 
+                const slideIndex = images.findIndex(img => img.id === imageId);
+                if (slideIndex === -1) return;
+                
                 // تطبيق تأثير الحذف
-                const currentPageElement = book.children[currentPage];
-                currentPageElement.classList.add('swipe-down');
+                const slideElement = slider.children[slideIndex];
+                slideElement.style.opacity = '0';
+                slideElement.style.transform = 'scale(0.8)';
                 
                 setTimeout(() => {
                     // حذف الصورة من المصفوفة
-                    const deletedImageId = currentPageElement.dataset.id;
-                    images = images.filter(img => img.id !== deletedImageId);
+                    images = images.filter(img => img.id !== imageId);
                     
                     // حفظ التغييرات وعرض الصور المتبقية
                     saveImages();
-                    renderImages();
+                    renderSlides();
                     
                     showNotification('تم حذف الصورة');
-                }, 500);
+                }, 300);
+            }
+            
+            // تبديل وضع إعادة الترتيب
+            rearrangeBtn.addEventListener('click', function() {
+                isRearranging = !isRearranging;
+                
+                if (isRearranging) {
+                    rearrangeBtn.innerHTML = '<i class="fas fa-check"></i> إنهاء الترتيب';
+                    rearrangeBtn.style.background = 'rgba(76, 175, 80, 0.8)';
+                    showNotification('اسحب الصور لأعلى أو لأسفل لإعادة ترتيبها');
+                } else {
+                    rearrangeBtn.innerHTML = '<i class="fas fa-arrows-alt-v"></i> ترتيب الصور';
+                    rearrangeBtn.style.background = 'rgba(255, 255, 255, 0.15)';
+                    showNotification('تم إنهاء وضع الترتيب');
+                }
             });
             
             // إضافة دعم السحب باللمس والفأرة
-            bookContainer.addEventListener('mousedown', handleStart);
-            bookContainer.addEventListener('touchstart', handleStart, { passive: true });
+            sliderContainer.addEventListener('mousedown', handleStart);
+            sliderContainer.addEventListener('touchstart', handleStart, { passive: true });
             
-            bookContainer.addEventListener('mousemove', handleMove);
-            bookContainer.addEventListener('touchmove', handleMove, { passive: true });
+            sliderContainer.addEventListener('mousemove', handleMove);
+            sliderContainer.addEventListener('touchmove', handleMove, { passive: true });
             
-            bookContainer.addEventListener('mouseup', handleEnd);
-            bookContainer.addEventListener('touchend', handleEnd);
-            bookContainer.addEventListener('mouseleave', handleEnd);
+            sliderContainer.addEventListener('mouseup', handleEnd);
+            sliderContainer.addEventListener('touchend', handleEnd);
+            sliderContainer.addEventListener('mouseleave', handleEnd);
             
             function handleStart(e) {
                 if (images.length <= 1) return;
@@ -619,10 +632,11 @@
                 const diffX = currentX - startX;
                 const diffY = currentY - startY;
                 
-                // تطبيق تأثير السحب على الصورة
-                if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
-                    const currentPageElement = book.children[currentPage];
-                    currentPageElement.style.transform = `translate(${diffX}px, ${diffY}px) rotate(${diffX * 0.1}deg)`;
+                // إذا كنا في وضع إعادة الترتيب
+                if (isRearranging && Math.abs(diffY) > Math.abs(diffX)) {
+                    e.preventDefault();
+                    const slideElement = slider.children[currentSlide];
+                    slideElement.style.transform = `translateY(${diffY}px)`;
                 }
             }
             
@@ -636,9 +650,9 @@
                 const diffX = endX - startX;
                 const diffY = endY - startY;
                 
-                // إعادة تعيين تحويل الصورة
-                const currentPageElement = book.children[currentPage];
-                currentPageElement.style.transform = `translateX(${currentPage * 100}%)`;
+                // إعادة تعيين تحويل الشريحة
+                const slideElement = slider.children[currentSlide];
+                slideElement.style.transform = '';
                 
                 // تحديد اتجاه السحب والقوة
                 const absDiffX = Math.abs(diffX);
@@ -646,66 +660,73 @@
                 
                 if (absDiffX < 20 && absDiffY < 20) return; // تجاهل السحب الصغير
                 
-                // تطبيق تأثيرات السحب
-                if (absDiffX > absDiffY) {
-                    // سحب أفقي
-                    if (diffX > 50) {
-                        // سحب لليمين - الصورة السابقة
-                        currentPageElement.classList.add('swipe-right');
-                        setTimeout(() => {
-                            currentPageElement.classList.remove('swipe-right');
-                            if (currentPage > 0) {
-                                goToPage(currentPage - 1);
-                            }
-                        }, 500);
-                    } else if (diffX < -50) {
-                        // سحب لليسار - الصورة التالية
-                        currentPageElement.classList.add('swipe-left');
-                        setTimeout(() => {
-                            currentPageElement.classList.remove('swipe-left');
-                            if (currentPage < images.length - 1) {
-                                goToPage(currentPage + 1);
-                            }
-                        }, 500);
+                // إذا كنا في وضع إعادة الترتيب
+                if (isRearranging && absDiffY > absDiffX) {
+                    if (diffY < -50 && currentSlide > 0) {
+                        // نقل الصورة للأعلى (لليسار في الترتيب)
+                        moveImageUp(currentSlide);
+                    } else if (diffY > 50 && currentSlide < images.length - 1) {
+                        // نقل الصورة للأسفل (لليمين في الترتيب)
+                        moveImageDown(currentSlide);
                     }
-                } else {
-                    // سحب عمودي
-                    if (diffY > 50) {
-                        // سحب لأسفل - حذف الصورة
-                        currentPageElement.classList.add('swipe-down');
-                        setTimeout(() => {
-                            currentPageElement.classList.remove('swipe-down');
-                            if (images.length > 0) {
-                                const deletedImageId = currentPageElement.dataset.id;
-                                images = images.filter(img => img.id !== deletedImageId);
-                                saveImages();
-                                renderImages();
-                                showNotification('تم حذف الصورة');
-                            }
-                        }, 500);
-                    } else if (diffY < -50 && images.length > 0) {
-                        // سحب لأعلى - تأثير خاص
-                        currentPageElement.classList.add('swipe-up');
-                        setTimeout(() => {
-                            currentPageElement.classList.remove('swipe-up');
-                        }, 500);
+                    return;
+                }
+                
+                // التنقل بين الشرائح
+                if (absDiffX > absDiffY) {
+                    if (diffX > 50 && currentSlide > 0) {
+                        // سحب لليمين - الشريحة السابقة
+                        goToSlide(currentSlide - 1);
+                    } else if (diffX < -50 && currentSlide < images.length - 1) {
+                        // سحب لليسار - الشريحة التالية
+                        goToSlide(currentSlide + 1);
                     }
                 }
             }
             
+            // نقل صورة لأعلى في الترتيب
+            function moveImageUp(index) {
+                if (index <= 0) return;
+                
+                // تبديل المواقع في المصفوفة
+                [images[index], images[index - 1]] = [images[index - 1], images[index]];
+                
+                // حفظ وعرض التغييرات
+                saveImages();
+                renderSlides();
+                goToSlide(index - 1);
+                
+                showNotification('تم نقل الصورة للأعلى');
+            }
+            
+            // نقل صورة لأسفل في الترتيب
+            function moveImageDown(index) {
+                if (index >= images.length - 1) return;
+                
+                // تبديل المواقع في المصفوفة
+                [images[index], images[index + 1]] = [images[index + 1], images[index]];
+                
+                // حفظ وعرض التغييرات
+                saveImages();
+                renderSlides();
+                goToSlide(index + 1);
+                
+                showNotification('تم نقل الصورة للأسفل');
+            }
+            
             // دعم إسقاط الملفات
-            bookContainer.addEventListener('dragover', function(e) {
+            sliderContainer.addEventListener('dragover', function(e) {
                 e.preventDefault();
-                bookContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
+                sliderContainer.style.backgroundColor = 'rgba(255, 255, 255, 0.1)';
             });
             
-            bookContainer.addEventListener('dragleave', function() {
-                bookContainer.style.backgroundColor = '';
+            sliderContainer.addEventListener('dragleave', function() {
+                sliderContainer.style.backgroundColor = '';
             });
             
-            bookContainer.addEventListener('drop', function(e) {
+            sliderContainer.addEventListener('drop', function(e) {
                 e.preventDefault();
-                bookContainer.style.backgroundColor = '';
+                sliderContainer.style.backgroundColor = '';
                 
                 const files = e.dataTransfer.files;
                 if (files.length > 0) {
@@ -714,7 +735,7 @@
             });
             
             // تهيئة أولية
-            renderImages();
+            renderSlides();
         });
     </script>
 </body>
